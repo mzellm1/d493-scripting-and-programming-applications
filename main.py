@@ -1,5 +1,8 @@
 import requests
 
+# C.1.
+# noinspection PyShadowingNames
+
 
 class WeatherLoc:
     def __init__(self, mlatitude, mlongitude, month, day, year,
@@ -21,6 +24,7 @@ class WeatherLoc:
         self.mrainmin = mrainmin
         self.mrainmax = mrainmax
 
+# C.2.
 # Conversion functions
 
 
@@ -145,3 +149,50 @@ for entry in weather_data:
     print(f"Max Wind Speed: {entry['max_wind_speed_mph']} mph")
     print(f"Precipitation Sum: {entry['precipitation_sum_inches']} inches")
     print("-" * 30)
+
+# C.3.
+
+weather_data = get_weather_for_last_5_years()
+
+# Create instances of WeatherLoc for May 20th date
+weather_locations = []
+latitude = 35.3395
+longitude = -97.4867
+
+for entry in weather_data:
+    # Extract data for the WeatherLoc instance
+    date_parts = entry['date'].split('-')
+    year = int(date_parts[0])
+    month = int(date_parts[1])
+    day = int(date_parts[2])
+
+    maveragetemp = entry['mean_temperature_fahrenheit']
+    mtempmin = None
+    mtempmax = None
+    maveragewindspeed = entry['max_wind_speed_mph']
+    mwindspeedmin = None
+    mwindspeedmax = None
+    msumprecipitation = entry['precipitation_sum_inches']
+    mrainmin = None
+    mrainmax = None
+
+    # Create an instance of WeatherLoc
+    weather_loc = WeatherLoc(
+        mlatitude=latitude,
+        mlongitude=longitude,
+        month=month,
+        day=day,
+        year=year,
+        maveragetemp=maveragetemp,
+        mtempmin=mtempmin,
+        mtempmax=mtempmax,
+        maveragewindspeed=maveragewindspeed,
+        mwindspeedmin=mwindspeedmin,
+        mwindspeedmax=mwindspeedmax,
+        msumprecipitation=msumprecipitation,
+        mrainmin=mrainmin,
+        mrainmax=mrainmax
+    )
+
+    # Append the instance to the list
+    weather_locations.append(weather_loc)
