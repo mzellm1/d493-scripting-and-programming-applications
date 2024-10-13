@@ -4,7 +4,7 @@ Location – Moore, OK
 Latitude and Longitude - 35.3395° N, 97.4867° W
 
 This program uses multiple classes and functions in order to run properly. WeatherLoc (weather location shorted for
-convivence) is the first class create and contains information for a weather location’s latitude, longitude, month,
+convenience) is the first class create and contains information for a weather location’s latitude, longitude, month,
 day, year, average temperature, minimum temperature, maximum temperature, average windspeed, minimum windspeed,
 maximum windspeed, sum of precipitation, minimum precipitation, and the maximum precipitation.
 
