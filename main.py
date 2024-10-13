@@ -1,28 +1,31 @@
 import requests
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
+from ClassForSQLA import WeatherLoc, Base
 
 # C.1.
 # noinspection PyShadowingNames
 
 
 class WeatherLoc:
-    def __init__(self, mlatitude, mlongitude, month, day, year,
-                 maveragetemp, mtempmin, mtempmax, maveragewindspeed,
-                 mwindspeedmin, mwindspeedmax, msumprecipitation,
-                 mrainmin, mrainmax):
-        self.mlatitude = mlatitude
-        self.mlongitude = mlongitude
+    def __init__(self, latitude, longitude, month, day, year,
+                 avg_temp, min_temp, max_temp, avg_wind_speed,
+                 min_wind_speed, max_wind_speed, sum_precipitation,
+                 min_precipitation, max_precipitation):
+        self.latitude = latitude
+        self.longitude = longitude
         self.month = month
         self.day = day
         self.year = year
-        self.maveragetemp = maveragetemp
-        self.mtempmin = mtempmin
-        self.mtempmax = mtempmax
-        self.maveragewindspeed = maveragewindspeed
-        self.mwindspeedmin = mwindspeedmin
-        self.mwindspeedmax = mwindspeedmax
-        self.msumprecipitation = msumprecipitation
-        self.mrainmin = mrainmin
-        self.mrainmax = mrainmax
+        self.avg_temperature = avg_temp
+        self.min_temperature = min_temp
+        self.max_temperature = max_temp
+        self.avg_wind_speed = avg_wind_speed
+        self.min_wind_speed = min_wind_speed
+        self.max_wind_speed = max_wind_speed
+        self.sum_precipitation = sum_precipitation
+        self.min_precipitation = min_precipitation
+        self.max_precipitation = max_precipitation
 
 # C.2.
 # Conversion functions
@@ -152,47 +155,84 @@ for entry in weather_data:
 
 # C.3.
 
-weather_data = get_weather_for_last_5_years()
+def get_weather_for_last_5_years(session):
+    years = [2024, 2023, 2022, 2021, 2020]
+    base_date = "05-20"  # Target date
 
-# Create instances of WeatherLoc for May 20th date
-weather_locations = []
-latitude = 35.3395
-longitude = -97.4867
+    for year in years:
+        query_date = f"{year}-{base_date}"
+        print(f"Fetching data for: {query_date}")
 
-for entry in weather_data:
-    # Extract data for the WeatherLoc instance
-    date_parts = entry['date'].split('-')
-    year = int(date_parts[0])
-    month = int(date_parts[1])
-    day = int(date_parts[2])
+        # Fetch data
+        mean_temp = get_mean_temperature(query_date)
+        max_wind_speed = get_max_wind_speed(query_date)
+        precipitation_sum = get_precipitation_sum(query_date)
 
-    maveragetemp = entry['mean_temperature_fahrenheit']
-    mtempmin = None
-    mtempmax = None
-    maveragewindspeed = entry['max_wind_speed_mph']
-    mwindspeedmin = None
-    mwindspeedmax = None
-    msumprecipitation = entry['precipitation_sum_inches']
-    mrainmin = None
-    mrainmax = None
+        # Create a new record
+        new_record = WeatherLoc(
+            latitude=35.3395,  # Your actual latitude
+            longitude=-97.4867,  # Your actual longitude
+            month=5,
+            day=20,
+            year=year,
+            avg_temperature=mean_temp,
+            min_temperature=None,
+            max_temperature=None,
+            avg_wind_speed=None,
+            min_wind_speed=None,
+            max_wind_speed=max_wind_speed,
+            sum_precipitation=precipitation_sum,
+            min_precipitation=None,
+            max_precipitation=None
+        )
 
-    # Create an instance of WeatherLoc
-    weather_loc = WeatherLoc(
-        mlatitude=latitude,
-        mlongitude=longitude,
-        month=month,
-        day=day,
-        year=year,
-        maveragetemp=maveragetemp,
-        mtempmin=mtempmin,
-        mtempmax=mtempmax,
-        maveragewindspeed=maveragewindspeed,
-        mwindspeedmin=mwindspeedmin,
-        mwindspeedmax=mwindspeedmax,
-        msumprecipitation=msumprecipitation,
-        mrainmin=mrainmin,
-        mrainmax=mrainmax
-    )
+        # Add the record to the session
+        session.add(new_record)
 
-    # Append the instance to the list
-    weather_locations.append(weather_loc)
+    # Commit the session to save all records
+    session.commit()
+
+DATABASE_URL = "sqlite:///weather_data.db"  # Update with your actual database path
+engine = create_engine(DATABASE_URL)
+
+# Drop the existing table if it exists
+with engine.connect() as connection:
+    connection.execute(text("DROP TABLE IF EXISTS weather_data;"))
+
+Base.metadata.create_all(engine)
+
+# Create a session
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# Fetch weather data and insert it into the database
+
+
+# Fetch all records from the WeatherData table
+def fetch_and_print_weather_data(session):
+    records = session.query(WeatherLoc).all()
+
+    # Print headers
+    headers = [
+        "ID", "Latitude", "Longitude", "Year", "Month", "Day",
+        "Avg Temp (°F)", "Min Temp (°F)", "Max Temp (°F)",
+        "Avg Wind Speed (mph)", "Min Wind Speed (mph)", "Max Wind Speed (mph)",
+        "Total Precipitation (in)", "Min Precipitation (in)", "Max Precipitation (in)"
+    ]
+
+    print(f"{' | '.join(headers)}")
+    print('-' * 100)
+
+    # Print each record
+    for record in records:
+        print(f"{record.id} | {record.latitude} | {record.longitude} | "
+              f"{record.year} | {record.month} | {record.day} | "
+              f"{record.avg_temperature} | {record.min_temperature} | {record.max_temperature} | "
+              f"{record.avg_wind_speed} | {record.min_wind_speed} | {record.max_wind_speed} | "
+              f"{record.sum_precipitation} | {record.min_precipitation} | {record.max_precipitation}")
+
+
+# Call the function to fetch and print data
+get_weather_for_last_5_years(session)
+
+fetch_and_print_weather_data(session)
