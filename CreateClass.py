@@ -34,24 +34,3 @@ class WeatherLoc:
         print(f"Maximum Precipitation: {self.max_precipitation}")
         print("WeatherLoc instance created successfully!\n")
 
-# test
-
-
-TestWeather = WeatherLoc(
-    latitude=42,
-    longitude=-107,
-    month=7,
-    day=3,
-    year=2012,
-    avg_temp=102,
-    min_temp=92,
-    max_temp=114,
-    avg_wind_speed=8.0,
-    min_wind_speed=1.0,
-    max_wind_speed=22.0,
-    sum_precipitation=14.0,
-    min_precipitation=1.0,
-    max_precipitation=13.0
-)
-
-print(TestWeather)
