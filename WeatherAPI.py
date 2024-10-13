@@ -193,16 +193,36 @@ def fetch_and_print_weather_data(session):
         "Total Precipitation (in)", "Min Precipitation (in)", "Max Precipitation (in)"
     ]
 
-    print(f"{' | '.join(headers)}")
-    print('-' * 100)
+    # Define a header format to ensure the headers align with the data
+    header_format = "{:<5} | {:<9} | {:<10} | {:<5} | {:<6} | {:<4} | {:<14} | {:<14} | {:<14} | {:<20} | {:<20} | {:<20} | {:<23} | {:<23} | {:<23}"
+
+    # Print the header row
+    print(header_format.format(*headers))
+    print('-' * 180)
+
+    # Define a data format to align the data with the headers
+    data_format = "{:<5} | {:<9} | {:<10} | {:<5} | {:<6} | {:<4} | {:<14} | {:<14} | {:<14} | {:<20} | {:<20} | {:<20} | {:<23} | {:<23} | {:<23}"
 
     # Print each record
     for record in records:
-        print(f"{record.id} | {record.latitude} | {record.longitude} | "
-              f"{record.year} | {record.month} | {record.day} | "
-              f"{record.avg_temperature} | {record.min_temperature} | {record.max_temperature} | "
-              f"{record.avg_wind_speed} | {record.min_wind_speed} | {record.max_wind_speed} | "
-              f"{record.sum_precipitation} | {record.min_precipitation} | {record.max_precipitation}")
+        print(data_format.format(
+            record.id or "N/A",
+            f"{record.latitude:.2f}" if record.latitude is not None else "N/A",
+            f"{record.longitude:.2f}" if record.longitude is not None else "N/A",
+            record.year or "N/A",
+            record.month or "N/A",
+            record.day or "N/A",
+            f"{record.avg_temperature:.2f}" if record.avg_temperature is not None else "N/A",
+            f"{record.min_temperature:.2f}" if record.min_temperature is not None else "N/A",
+            f"{record.max_temperature:.2f}" if record.max_temperature is not None else "N/A",
+            f"{record.avg_wind_speed:.2f}" if record.avg_wind_speed is not None else "N/A",
+            f"{record.min_wind_speed:.2f}" if record.min_wind_speed is not None else "N/A",
+            f"{record.max_wind_speed:.2f}" if record.max_wind_speed is not None else "N/A",
+            f"{record.sum_precipitation:.2f}" if record.sum_precipitation is not None else "N/A",
+            f"{record.min_precipitation:.2f}" if record.min_precipitation is not None else "N/A",
+            f"{record.max_precipitation:.2f}" if record.max_precipitation is not None else "N/A"
+        ))
+
 
 
 # Call the function to fetch and print data
