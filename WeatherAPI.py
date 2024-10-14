@@ -20,7 +20,6 @@ def mm_to_inches(mm):
 # API URL
 API_URL = "https://archive-api.open-meteo.com/v1/archive"
 
-# Location coordinates
 LOCATION = {
     "latitude": 35.3395,  # Latitude for the location
     "longitude": -97.4867  # Longitude for the location
@@ -102,7 +101,8 @@ def get_weather_for_last_5_years():
 
         # Check if the expected data was pulled
         print(
-            f"Data received for {query_date}: Temp={mean_temp}, Wind={max_wind_speed}, Precipitation={precipitation_sum}\n")
+            f"Data received for {query_date}: Temp={mean_temp}, Wind={max_wind_speed}, "
+            f"Precipitation={precipitation_sum}\n")
 
         weather_data.append({
             "date": query_date,
@@ -125,7 +125,7 @@ for entry in weather_data:
     print(f"Precipitation Sum: {entry['precipitation_sum_inches']} inches")
     print("-" * 30)
 
-# Main script
+# noinspection PyShadowingNames
 
 
 def get_weather_for_last_5_years(session):
@@ -165,7 +165,8 @@ def get_weather_for_last_5_years(session):
     # Commit the session to save all records
     session.commit()
 
-DATABASE_URL = "sqlite:///weather_data.db"  # Update with your actual database path
+
+DATABASE_URL = "sqlite:///weather_data.db"
 engine = create_engine(DATABASE_URL)
 
 # Drop the existing table if it exists
@@ -178,10 +179,10 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# Fetch weather data and insert it into the database
-
-
 # Fetch all records from the WeatherData table
+# noinspection PyShadowingNames
+
+
 def fetch_and_print_weather_data(session):
     records = session.query(WeatherLoc).all()
 
@@ -194,14 +195,16 @@ def fetch_and_print_weather_data(session):
     ]
 
     # Define a header format to ensure the headers align with the data
-    header_format = "{:<5} | {:<9} | {:<10} | {:<5} | {:<6} | {:<4} | {:<14} | {:<14} | {:<14} | {:<20} | {:<20} | {:<20} | {:<23} | {:<23} | {:<23}"
+    header_format = ("{:<5} | {:<9} | {:<10} | {:<5} | {:<6} | {:<4} | {:<14} | {:<14} | {:<14} | {:<20} | "
+                     "{:<20} | {:<20} | {:<23} | {:<23} | {:<23}")
 
     # Print the header row
     print(header_format.format(*headers))
     print('-' * 180)
 
     # Define a data format to align the data with the headers
-    data_format = "{:<5} | {:<9} | {:<10} | {:<5} | {:<6} | {:<4} | {:<14} | {:<14} | {:<14} | {:<20} | {:<20} | {:<20} | {:<23} | {:<23} | {:<23}"
+    data_format = ("{:<5} | {:<9} | {:<10} | {:<5} | {:<6} | {:<4} | {:<14} | {:<14} | {:<14} | {:<20} | "
+                   "{:<20} | {:<20} | {:<23} | {:<23} | {:<23}")
 
     # Print each record
     for record in records:
@@ -222,7 +225,6 @@ def fetch_and_print_weather_data(session):
             f"{record.min_precipitation:.2f}" if record.min_precipitation is not None else "N/A",
             f"{record.max_precipitation:.2f}" if record.max_precipitation is not None else "N/A"
         ))
-
 
 
 # Call the function to fetch and print data

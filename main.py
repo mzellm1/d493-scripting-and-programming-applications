@@ -47,7 +47,7 @@ def mm_to_inches(mm):
 # API URL
 API_URL = "https://archive-api.open-meteo.com/v1/archive"
 
-# Location coordinates
+# Moore, OK coordinates
 LOCATION = {
     "latitude": 35.3395,  # Latitude for the location
     "longitude": -97.4867  # Longitude for the location
@@ -115,7 +115,6 @@ def get_precipitation_sum(date):
 # Fetch weather data for May 20th for the last 5 years
 # noinspection PyShadowingNames
 def get_weather_for_last_5_years():
-    # The years specified for clarity
     years = [2024, 2023, 2022, 2021, 2020]
     base_date = "05-20"
     weather_data = []
@@ -155,6 +154,7 @@ for entry in weather_data:
     print("-" * 30)
 
 # C.3.
+# noinspection PyShadowingNames
 
 
 def get_weather_for_last_5_years(session):
@@ -165,15 +165,15 @@ def get_weather_for_last_5_years(session):
         query_date = f"{year}-{base_date}"
         print(f"Fetching data for: {query_date}")
 
-        # Fetch data
+        # Fetch data for these fields
         mean_temp = get_mean_temperature(query_date)
         max_wind_speed = get_max_wind_speed(query_date)
         precipitation_sum = get_precipitation_sum(query_date)
 
-        # Create a new record
+        # Creating a new record
         new_record = WeatherLoc(
-            latitude=35.3395,  # Your actual latitude
-            longitude=-97.4867,  # Your actual longitude
+            latitude=35.3395,
+            longitude=-97.4867,
             month=5,
             day=20,
             year=year,
@@ -191,10 +191,11 @@ def get_weather_for_last_5_years(session):
         # Add the record to the session
         session.add(new_record)
 
-    # Commit the session to save all records
+    # Commit the session to save record
     session.commit()
 
-DATABASE_URL = "sqlite:///weather_data.db"  # Update with your actual database path
+
+DATABASE_URL = "sqlite:///weather_data.db"
 engine = create_engine(DATABASE_URL)
 
 # Drop the existing table if it exists
@@ -203,18 +204,18 @@ with engine.connect() as connection:
 
 Base.metadata.create_all(engine)
 
-# Create a session
+# Create another session
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# Fetch weather data and insert it into the database
-
-
 # Fetch all records from the WeatherData table
+# noinspection PyShadowingNames
+
+
 def fetch_and_print_weather_data(session):
     records = session.query(WeatherLoc).all()
 
-    # Print headers
+    # table headers
     headers = [
         "ID", "Latitude", "Longitude", "Year", "Month", "Day",
         "Avg Temp (°F)", "Min Temp (°F)", "Max Temp (°F)",
@@ -222,15 +223,17 @@ def fetch_and_print_weather_data(session):
         "Total Precipitation (in)", "Min Precipitation (in)", "Max Precipitation (in)"
     ]
 
-    # Define a header format to ensure the headers align with the data
-    header_format = "{:<5} | {:<9} | {:<10} | {:<5} | {:<6} | {:<4} | {:<14} | {:<14} | {:<14} | {:<20} | {:<20} | {:<20} | {:<23} | {:<23} | {:<23}"
+    # Header formatting to ensure the headers align with the data
+    header_format = ("{:<5} | {:<9} | {:<10} | {:<5} | {:<6} | {:<4} | {:<14} | {:<14} | {:<14} | {:<20} | "
+                     "{:<20} | {:<20} | {:<23} | {:<23} | {:<23}")
 
     # Print the header row
     print(header_format.format(*headers))
     print('-' * 180)
 
-    # Define a data format to align the data with the headers
-    data_format = "{:<5} | {:<9} | {:<10} | {:<5} | {:<6} | {:<4} | {:<14} | {:<14} | {:<14} | {:<20} | {:<20} | {:<20} | {:<23} | {:<23} | {:<23}"
+    # Format the data to align with the headers
+    data_format = ("{:<5} | {:<9} | {:<10} | {:<5} | {:<6} | {:<4} | {:<14} | {:<14} | {:<14} | {:<20} | {:<20} "
+                   "| {:<20} | {:<23} | {:<23} | {:<23}")
 
     # Print each record
     for record in records:
@@ -253,8 +256,7 @@ def fetch_and_print_weather_data(session):
         ))
 
 
-
-# Call the function to fetch and print data
+# Call the function to fetch and print data in a formatted table
 get_weather_for_last_5_years(session)
 
 fetch_and_print_weather_data(session)

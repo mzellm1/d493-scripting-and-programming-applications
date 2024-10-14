@@ -68,6 +68,8 @@ print(TestWeather)
 # Conversion functions
 
 print("This is test 2\n")
+
+
 def celsius_to_fahrenheit(celsius):
     return (celsius * 9 / 5) + 32
 
@@ -191,7 +193,10 @@ for entry in weather_data:
 
 print("This is test 3\n")
 
-# Changed years for function to pull data from
+# Changed which years the function will pull data from
+# noinspection PyShadowingNames
+
+
 def get_weather_for_last_5_years(session):
     years = [2011, 2012, 2013, 2014, 2015]
     base_date = "05-20"  # Target date
@@ -229,6 +234,7 @@ def get_weather_for_last_5_years(session):
     # Commit the session to save all records
     session.commit()
 
+
 DATABASE_URL = "sqlite:///weather_data.db"  # Update with your actual database path
 engine = create_engine(DATABASE_URL)
 
@@ -242,10 +248,10 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# Fetch weather data and insert it into the database
-
-
 # Fetch all records from the WeatherData table
+# noinspection PyShadowingNames
+
+
 def fetch_and_print_weather_data(session):
     records = session.query(WeatherLoc).all()
 
@@ -257,15 +263,16 @@ def fetch_and_print_weather_data(session):
         "Total Precipitation (in)", "Min Precipitation (in)", "Max Precipitation (in)"
     ]
 
-    # Define a header format to ensure the headers align with the data
-    header_format = "{:<5} | {:<9} | {:<10} | {:<5} | {:<6} | {:<4} | {:<14} | {:<14} | {:<14} | {:<20} | {:<20} | {:<20} | {:<23} | {:<23} | {:<23}"
+    # Header formatting to ensure the headers align with the data
+    header_format = ("{:<5} | {:<9} | {:<10} | {:<5} | {:<6} | {:<4} | {:<14} | {:<14} | {:<14} | {:<20} | "
+                     "{:<20} | {:<20} | {:<23} | {:<23} | {:<23}")
 
-    # Print the header row
     print(header_format.format(*headers))
     print('-' * 180)
 
-    # Define a data format to align the data with the headers
-    data_format = "{:<5} | {:<9} | {:<10} | {:<5} | {:<6} | {:<4} | {:<14} | {:<14} | {:<14} | {:<20} | {:<20} | {:<20} | {:<23} | {:<23} | {:<23}"
+    # Data format to align the data with the headers
+    data_format = ("{:<5} | {:<9} | {:<10} | {:<5} | {:<6} | {:<4} | {:<14} | {:<14} | {:<14} | {:<20} | "
+                   "{:<20} | {:<20} | {:<23} | {:<23} | {:<23}")
 
     # Print each record
     for record in records:
@@ -286,7 +293,6 @@ def fetch_and_print_weather_data(session):
             f"{record.min_precipitation:.2f}" if record.min_precipitation is not None else "N/A",
             f"{record.max_precipitation:.2f}" if record.max_precipitation is not None else "N/A"
         ))
-
 
 
 # Call the function to fetch and print data

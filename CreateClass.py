@@ -33,4 +33,3 @@ class WeatherLoca:
         print(f"Minimum Precipitation: {self.min_precipitation}")
         print(f"Maximum Precipitation: {self.max_precipitation}")
         print("WeatherLoc instance created successfully!\n")
-
