@@ -60,7 +60,7 @@ puts it into a table and then prints the table when the function is called.
 For the functions and classes to work properly, imports will be necessary. First import requests, then from sqlalchemy
 import create_engine and text, then from sqlalchemy.orm import sessionmaker, and then assuming the WeatherLoc(Base)
 class is in a separate file it will need to set up as from ClassForSQLA import WeatherLoc, Base. If the class is created
-in the same file like it is in main.py then that import will not be necessary.
+in the same file as it is in main.py then that import will not be necessary.
 
 At the bottom of the code there are two functions called in order to pull the data, create a record and table, and then
 pull the data and print the table. They are called in order:

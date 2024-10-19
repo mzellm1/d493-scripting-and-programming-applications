@@ -128,6 +128,72 @@ for entry in weather_data:
 # noinspection PyShadowingNames
 
 
+def get_temperature_data(date):
+    params = {
+        "latitude": LOCATION["latitude"],
+        "longitude": LOCATION["longitude"],
+        "start_date": date,
+        "end_date": date,
+        "daily": ["temperature_2m_min", "temperature_2m_max", "temperature_2m_mean"],
+        "timezone": "UTC"
+    }
+
+    response = requests.get(API_URL, params=params)
+    data = response.json()
+
+    if "daily" in data:
+        temp_min = data["daily"].get("temperature_2m_min", [None])[0]
+        temp_max = data["daily"].get("temperature_2m_max", [None])[0]
+        temp_mean = data["daily"].get("temperature_2m_mean", [None])[0]
+        return (
+            celsius_to_fahrenheit(temp_mean) if temp_mean else None,
+            celsius_to_fahrenheit(temp_min) if temp_min else None,
+            celsius_to_fahrenheit(temp_max) if temp_max else None
+        )
+    return None, None, None
+
+def get_wind_speed_data(date):
+    params = {
+        "latitude": LOCATION["latitude"],
+        "longitude": LOCATION["longitude"],
+        "start_date": date,
+        "end_date": date,
+        "daily": ["windspeed_10m_max", "windspeed_10m_mean", "windspeed_10m_min"],
+        "timezone": "UTC"
+    }
+
+    response = requests.get(API_URL, params=params)
+    data = response.json()
+
+    if "daily" in data:
+        wind_speed_mean = data["daily"].get("windspeed_10m_mean", [None])[0]
+        wind_speed_min = data["daily"].get("windspeed_10m_min", [None])[0]
+        wind_speed_max = data["daily"].get("windspeed_10m_max", [None])[0]
+        return (
+            ms_to_mph(wind_speed_mean) if wind_speed_mean else None,
+            ms_to_mph(wind_speed_min) if wind_speed_min else None,
+            ms_to_mph(wind_speed_max) if wind_speed_max else None
+        )
+    return None, None, None
+
+def get_precipitation_sum(date):
+    params = {
+        "latitude": LOCATION["latitude"],
+        "longitude": LOCATION["longitude"],
+        "start_date": date,
+        "end_date": date,
+        "daily": "precipitation_sum",
+        "timezone": "UTC"
+    }
+
+    response = requests.get(API_URL, params=params)
+    data = response.json()
+
+    if "daily" in data and "precipitation_sum" in data["daily"]:
+        precipitation_mm = data["daily"]["precipitation_sum"][0]
+        return mm_to_inches(precipitation_mm)
+    return None
+
 def get_weather_for_last_5_years(session):
     years = [2024, 2023, 2022, 2021, 2020]
     base_date = "05-20"  # Target date
@@ -137,22 +203,22 @@ def get_weather_for_last_5_years(session):
         print(f"Fetching data for: {query_date}")
 
         # Fetch data
-        mean_temp = get_mean_temperature(query_date)
-        max_wind_speed = get_max_wind_speed(query_date)
+        mean_temp, min_temp, max_temp = get_temperature_data(query_date)
+        avg_wind_speed, min_wind_speed, max_wind_speed = get_wind_speed_data(query_date)
         precipitation_sum = get_precipitation_sum(query_date)
 
         # Create a new record
         new_record = WeatherLoc(
-            latitude=35.3395,  # Your actual latitude
-            longitude=-97.4867,  # Your actual longitude
+            latitude=35.3395,
+            longitude=-97.4867,
             month=5,
             day=20,
             year=year,
             avg_temperature=mean_temp,
-            min_temperature=None,
-            max_temperature=None,
-            avg_wind_speed=None,
-            min_wind_speed=None,
+            min_temperature=min_temp,
+            max_temperature=max_temp,
+            avg_wind_speed=avg_wind_speed,
+            min_wind_speed=min_wind_speed,
             max_wind_speed=max_wind_speed,
             sum_precipitation=precipitation_sum,
             min_precipitation=None,
